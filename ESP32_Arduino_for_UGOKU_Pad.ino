@@ -21,7 +21,7 @@ void setup() {
   Serial.begin(115200);               // Initialize the serial communication with a baud rate of 115200
 
   // Setup the BLE connection
-  controller.setup("BLE TEST");       // Set the BLE device name to "BLE TEST"
+  controller.setup("My ESP32");       // Set the BLE device name to "My ESP32"
 
   // Set callback functions for when a device connects and disconnects
   controller.setOnConnectCallback(onDeviceConnect);   // Function called on device connection
