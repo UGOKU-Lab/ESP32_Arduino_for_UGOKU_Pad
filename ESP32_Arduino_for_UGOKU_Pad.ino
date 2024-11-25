@@ -10,8 +10,8 @@ bool isConnected = false;             // Boolean flag to track BLE connection st
 // Define the pins
 #define PIN_SERVO_1 12                  // Pin number for the servo
 #define PIN_SERVO_2 14                  // Pin number for the servo
-#define PIN_MIC_ANALOG 26             // Pin number for the analog microphone input
-#define PIN_MIC_DIGITAL 27            // Pin number for the digital microphone input
+#define PIN_ANALOG_READ 26             // Pin number for the analog input
+#define PIN_DIGITAL_OUT 27            // Pin number for the digital output
 
 Servo servo1;                         // Create a Servo object
 Servo servo2;                         // Create a Servo object
@@ -32,9 +32,9 @@ void setup() {
   // Setup the servo
   servo1.setPeriodHertz(50);          // Set the servo PWM frequency to 50Hz (typical for servos)
 
-  // Setup the microphone pins
-  pinMode(PIN_MIC_ANALOG, INPUT);     // Set the analog microphone pin as input
-  pinMode(PIN_MIC_DIGITAL, OUTPUT);    // Set the digital microphone pin as input
+  // Setup the I/O pins
+  pinMode(PIN_ANALOG_READ, INPUT);    
+  pinMode(PIN_DIGITAL_OUT, OUTPUT);    
 }
 
 // Function called when a BLE device connects
@@ -87,13 +87,9 @@ void loop() {
         servo2.write(VAL);
         break;
     }
-    /*
-    // Read the analog value from the microphone and send it back to the BLE device
-    int analogVal = analogRead(PIN_MIC_ANALOG);   // Read analog microphone data
-    controller.write_data(5, analogVal);          // Send the microphone data over BLE
-    */
+ 
     int psd = analogRead(26);
-    float dist = 1 / (float)psd * 30000;
+    float dist = 1 / (float)psd * 30000;  // Conversion of analogue values to cm
     int dist_int = (int)dist;
     controller.write_data(5,dist_int);
 
