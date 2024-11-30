@@ -11,7 +11,7 @@ ESP32をUGOKU Padで動かすArduinoのサンプルプログラムです。
 <img src="https://github.com/user-attachments/assets/cae88e9d-53ed-4a1c-bf38-bd7de3d8b462" width="350">  
 
 　
-- Select Other Board and Port **ESP32 Dev Module** を検索して選択する 
+- Select Other Board and Port で **ESP32 Dev Module** を検索して選択する 
 <img src="https://github.com/user-attachments/assets/670f19c9-2996-4bbd-9af5-0fa0ecb96540" width="350">  
 
 
