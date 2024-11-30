@@ -1,6 +1,17 @@
 # ESP32_Arduino_for_UGOKU_Pad
 ESP32をUGOKU Padで動かすArduinoのサンプルプログラムです。
 
+### 使用方法
+#### ライブラリのインストール
+1. LibraryManegreからESP32servoを検索してインストールする
+
+![image](https://github.com/user-attachments/assets/240c0f71-7568-4d48-be1f-f5498d0c759a)
+
+
+<img src="https://github.com/user-attachments/assets/03bf7964-c6c7-4e85-a25b-a88410169c76" width="600">
+
+
+
 ### UGOKU Pad
 UGOKU Pad α版: https://play.google.com/store/apps/details?id=com.ugoku_lab.ugoku_console
 
