@@ -2,17 +2,21 @@
 ESP32をUGOKU Padで動かすArduinoのサンプルプログラムです。
 
 ### 使用方法
-#### ライブラリのインストール
-1. LibraryManegreからESP32servoを検索してインストールする
+#### Arduino IDE での準備
+- BOARD MANAGER で ESP32 を検索して **Arduino ESP32 Boarsds** と **esp32** をインストールする  
+<img src="https://github.com/user-attachments/assets/34e671e7-9068-47e4-8431-86b137ea8c13" width="350">
 
-![image](https://github.com/user-attachments/assets/240c0f71-7568-4d48-be1f-f5498d0c759a)
+　
+- LIBRARY MANAGER で **ESP32Servo** を検索してインストールする  
+<img src="https://github.com/user-attachments/assets/cae88e9d-53ed-4a1c-bf38-bd7de3d8b462" width="350">  
+
+　
+- Select Other Board and Port **ESP32 Dev Module** を検索して選択する 
+<img src="https://github.com/user-attachments/assets/670f19c9-2996-4bbd-9af5-0fa0ecb96540" width="350">  
 
 
-<img src="https://github.com/user-attachments/assets/03bf7964-c6c7-4e85-a25b-a88410169c76" width="600">
 
-
-
-### UGOKU Pad
+### UGOKU Pad の設定
 UGOKU Pad α版: https://play.google.com/store/apps/details?id=com.ugoku_lab.ugoku_console
 
 Console内の「ESP32 Arduino Sample」を使用
