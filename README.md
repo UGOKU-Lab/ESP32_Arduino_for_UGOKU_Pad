@@ -21,12 +21,11 @@ ESP32をUGOKU Padで動かすArduinoのサンプルプログラムです。
 <img src="https://github.com/user-attachments/assets/670f19c9-2996-4bbd-9af5-0fa0ecb96540" width="350">  
 
 
-
 ## UGOKU Pad の設定
-UGOKU Pad α版: https://play.google.com/store/apps/details?id=com.ugoku_lab.ugoku_console
+UGOKU Padをインストール
+[<img src="https://github.com/user-attachments/assets/f54cbacd-c388-4011-bc9d-f74848ed55d5" alt="Get it on Google Play" height="80">](https://play.google.com/store/apps/details?id=com.ugoku_lab.ugoku_console)
 
 Console内の「ESP32 Arduino Sample」を使用
-
 <img src="https://github.com/user-attachments/assets/a0c7ed43-5082-4802-9647-cbb8cc861142" width="200">
 <img src="https://github.com/user-attachments/assets/578605c3-9ea8-434b-b564-59bf12aa8233" width="200">
 
@@ -39,9 +38,6 @@ Console内の「ESP32 Arduino Sample」を使用
 | RCサーボ | 14 |
 | ローテーションサーボ | 12 |
 
-## 使用ライブラリ
-- Arduino標準ライブラリ
-- ESP32servo
 
 ## 動作確認
 ESP32-WROOM-32E、ESP32-WROVER-Eで動作確認済み
