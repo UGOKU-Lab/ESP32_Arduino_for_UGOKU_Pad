@@ -18,10 +18,11 @@ void UGOKU_Pad_Controller::setup(char *device_name) {
   // Create a BLE service and characteristic
   pService = pServer->createService(SERVICE_UUID);  // Create a service with a defined UUID
   pCharacteristic = pService->createCharacteristic(
-                                         CHARACTERISTIC_UUID,  // Characteristic UUID
-                                         BLECharacteristic::PROPERTY_READ |  // Allow read
-                                         BLECharacteristic::PROPERTY_WRITE   // Allow write
-                                         );
+    CHARACTERISTIC_UUID,  // Characteristic UUID
+    BLECharacteristic::PROPERTY_READ |  // Allow read
+    BLECharacteristic::PROPERTY_WRITE |   // Allow write
+    BLECharacteristic::PROPERTY_WRITE_NR // Allow writing without response (for faster performance)
+  );
 
   pService->start();  // Start the BLE service
   
@@ -51,7 +52,27 @@ uint8_t UGOKU_Pad_Controller::read_data(void) {
   uint8_t err_num = 0;  // Initialize the error number
 
   // Read the value from the characteristic (received from the BLE client)
-  String value = pCharacteristic->getValue();
+  //String value = pCharacteristic->getValue();
+
+  //aoki Add ↓
+  std::string value = pCharacteristic->getValue();
+
+  if (value.length() == 3) {
+    ch = static_cast<uint8_t>(value[0]);
+    val = static_cast<uint8_t>(value[1]);
+    cs = static_cast<uint8_t>(value[2]);
+
+    if ((ch ^ val) == cs) {
+      if (ch < MAX_CHANNELS) {
+        data_array[ch] = val;
+      }
+      err_num = no_err;
+    } else {
+      ch = val = cs = 0xFF;
+      err_num = cs_err;
+    }
+  }
+  //aoki add ↑
 
   if (value.length() == 3) {  // Check if the value has exactly 3 bytes
     // Parse the received data
