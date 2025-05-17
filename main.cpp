@@ -15,7 +15,7 @@ Servo servo2;                         // Create a Servo object
 int lastCH = -1;
 int lastVAL = -1;
 
-float duty = 0;
+float duty = 0.0f;
 
 // Function called when a BLE device connects
 void onDeviceConnect() {
@@ -91,12 +91,14 @@ void loop() {
 
       // Control devices based on the received channel
       switch (CH) {
+        /*
         case 1: // LED control
           digitalWrite(2, (VAL == 1) ? LOW : HIGH);
           break;
         case 2: // Servo 1
           servo1.write(VAL);
           break;
+        */
         case 3: // Servo 2
           servo2.write(VAL);
           break;
@@ -104,10 +106,12 @@ void loop() {
           duty = (VAL / 127.5f) - 1.0f;
           MotorDriver_setSpeed(MD1, duty);
           break;
-        case 5: // Motor 2
+        /*
+          case 5: // Motor 2
           duty = (VAL / 127.5f) - 1.0f;
           MotorDriver_setSpeed(MD2, duty);
           break;
+        */
       }
       printf("%f\n\r",duty);
 
