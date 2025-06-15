@@ -43,6 +43,6 @@ Console内の「ESP32 Arduino Sample」を使用
 
 
 ## 動作確認
-ESP32-WROOM-32E、ESP32-WROVER-Eで動作確認済み
+ESP32-WROOM-32E、ESP32-WROVER-32Eで動作確認済み
 
 
