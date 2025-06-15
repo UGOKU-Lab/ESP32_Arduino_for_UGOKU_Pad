@@ -7,8 +7,9 @@
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"  // UUID for the BLE characteristic
 
 // Error codes
-#define no_err 0xE0   // No error
-#define cs_err 0xE1   // Checksum error
+#define no_err   0xE0   // No error
+#define cs_err   0xE1   // Checksum error
+#define data_err 0xE2   // Packet length was not exactly 19 bytes
 
 // Define the maximum number of channels
 #define MAX_CHANNELS 255  // Maximum number of channels supported

@@ -4,6 +4,7 @@
 #include <BLEDevice.h>  // Include the BLE device functionality
 #include <BLEUtils.h>   // Include BLE utility functions
 #include <BLEServer.h>  // Include BLE server functionality
+#include <BLE2902.h>  // For iOS
 #include "UGOKU_Pad_define.h"  // Include custom definitions for UGOKU Pad
 #include "MyServerCallbacks.hpp"  // Include custom server callbacks
 
@@ -25,35 +26,33 @@ class UGOKU_Pad_Controller {
     // Function to set the disconnect callback
     void setOnDisconnectCallback(void (*callback)());
 
-    // Function to read data from the BLE characteristic
+    // Read exactly 19 bytes from the characteristic:
+    //   [ (ch0, val0), (ch1, val1), … (ch8, val8) ] + [ checksum ]
+    // Returns last error code (no_err, cs_err, data_err).
     uint8_t read_data(void);
 
-    // Function to write data to the BLE characteristic
+    // Write exactly 19 bytes back to central: 9 pairs + 1 XOR-checksum
+    // Usage: supply two uint8_t arrays of length 9 (channels[9], values[9]).
+    // If you want to send fewer than nine (channel,value) pairs, zero out the unused slots.
+    void write_data(const uint8_t channels[9], const uint8_t values[9]);
+
+    // Convenience overload: send a single (channel, value) pair, all other slots = 0.
     void write_data(uint8_t channel, uint8_t value);
 
-    // Getter functions to retrieve the current channel and value
-    uint8_t get_ch(void);  // Get current channel
-    uint8_t get_val(void);  // Get current value
-
-    // Setter functions to set the current channel and value
-    void set_ch(uint8_t channel);  // Set the channel
-    void set_val(uint8_t value);  // Set the value
-
-    // Function to get data by specifying a channel
+    // Retrieve the last stored value for any channel index
     uint8_t getDataByChannel(uint8_t channel);
+
+    // How many valid (channel,value) pairs were parsed in the last read_data() call
+    uint8_t getLastPairsCount(void);
 
   private:
     // Private members for BLE server, service, and characteristic
     BLEServer *pServer;  // BLE server object
     BLEService *pService;  // BLE service object
     BLECharacteristic *pCharacteristic;  // BLE characteristic object
-
-    // Private member variables to hold the channel, value, checksum, and error number
-    uint8_t ch;  // Channel ID
-    uint8_t val;  // Value associated with the channel
-    uint8_t cs;  // Checksum for validation
-    uint8_t err_num;  // Error number
-
+    
     // Array to store data for each channel
     uint8_t data_array[MAX_CHANNELS];  // Data array for storing values per channel
+    uint8_t err_num;                  // Last error code (no_err, cs_err, data_err)
+    uint8_t last_pairs_count;         // Number of valid pairs in last read_data()
 };
