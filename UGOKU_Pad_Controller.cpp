@@ -18,20 +18,12 @@ void UGOKU_Pad_Controller::setup(char *device_name) {
   // Create a BLE service and characteristic
   pService = pServer->createService(SERVICE_UUID);  // Create a service with a defined UUID
   pCharacteristic = pService->createCharacteristic(
-<<<<<<< HEAD
-    CHARACTERISTIC_UUID,  // Characteristic UUID
-    BLECharacteristic::PROPERTY_READ |  // Allow read
-    BLECharacteristic::PROPERTY_WRITE |   // Allow write
-    BLECharacteristic::PROPERTY_WRITE_NR // Allow writing without response (for faster performance)
-  );
-=======
                                          CHARACTERISTIC_UUID,                    // Characteristic UUID
                                          BLECharacteristic::PROPERTY_READ |      // Allow read
                                          BLECharacteristic::PROPERTY_WRITE |     // Allow write
                                          BLECharacteristic::PROPERTY_WRITE_NR |  // Allow writing without response (for faster performance)
                                          BLECharacteristic::PROPERTY_NOTIFY      // Allow notify
                                          );
->>>>>>> remotes/origin/for_UGOKU-Pad_2
 
   pCharacteristic->addDescriptor(new BLE2902()); // For IOS
 
@@ -64,60 +56,11 @@ uint8_t UGOKU_Pad_Controller::read_data(void) {
   String raw = pCharacteristic->getValue();  // Expecting 19 bytes
   size_t len = raw.length();
 
-<<<<<<< HEAD
-  // Read the value from the characteristic (received from the BLE client)
-  //String value = pCharacteristic->getValue();
-
-  //aoki Add ↓
-  std::string value = pCharacteristic->getValue();
-
-  if (value.length() == 3) {
-    ch = static_cast<uint8_t>(value[0]);
-    val = static_cast<uint8_t>(value[1]);
-    cs = static_cast<uint8_t>(value[2]);
-
-    if ((ch ^ val) == cs) {
-      if (ch < MAX_CHANNELS) {
-        data_array[ch] = val;
-      }
-      err_num = no_err;
-    } else {
-      ch = val = cs = 0xFF;
-      err_num = cs_err;
-    }
-  }
-  //aoki add ↑
-
-  if (value.length() == 3) {  // Check if the value has exactly 3 bytes
-    // Parse the received data
-    ch = value[0];  // First byte represents the channel ID
-    val = value[1];  // Second byte represents the value
-    cs = value[2];   // Third byte is the checksum
-
-    // Verify the checksum (XOR of channel and value should match checksum)
-    if ((ch ^ val) == cs) {
-      // If the channel is valid, store the value in the array
-      if (ch < MAX_CHANNELS) {
-        data_array[ch] = val;  // Store the value in the data array at the channel index
-      }
-
-      err_num = no_err;  // No error encountered
-
-    } else {
-      // If checksum verification fails, reset the values and set the error
-      ch = 0xFF;
-      val = 0xFF;
-      cs = 0xFF;
-
-      err_num = cs_err;  // Set error code for checksum failure
-    }
-=======
   if (len != 19) {
     // Packet length is wrong
     err_num = data_err;
     last_pairs_count = 0;
     return err_num;
->>>>>>> remotes/origin/for_UGOKU-Pad_2
   }
 
   uint8_t packet[19];
