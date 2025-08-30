@@ -1,123 +1,105 @@
-#include "UGOKU_Pad_Controller.hpp"   // Include the custom controller header for BLE handling
-#include "ESP32Servo.h"               // Include the ESP32 Servo library
+#include "UGOKU_Pad_Controller.hpp"   // BLE helper（UGOKU Pad 用の制御クラス）
+#include "ESP32Servo.h"               // ESP32 用サーボライブラリ
 
-UGOKU_Pad_Controller controller;      // Instantiate the UGOKU Pad Controller object
+UGOKU_Pad_Controller controller;      // UGOKU Pad 向け BLE コントローラインスタンス
 
-// Define the pins
-#define PIN_SERVO_1 12                  // Pin number for the servo
-#define PIN_SERVO_2 14                  // Pin number for the servo
-#define PIN_ANALOG_READ 26             // Pin number for the analog input
-#define PIN_LED 27                     // Pin number for the LED
+// 接続ピン定義
+#define PIN_SERVO_1 12       // サーボ1 出力ピン
+#define PIN_SERVO_2 14       // サーボ2 出力ピン
+#define PIN_ANALOG_READ 26   // アナログ入力（距離センサなど）
+#define PIN_LED 27           // ステータス LED
 
-Servo servo1;                         // Create a Servo object
-Servo servo2;                         // Create a Servo object
+Servo servo1;
+Servo servo2;
 
-bool isConnected = false;             // Boolean flag to track BLE connection status
+bool isConnected = false;    // BLE 接続状態フラグ
 
-// Track last read channel/value to avoid flooding Serial output
-uint8_t lastPrintedCh  = 255;
-uint8_t lastPrintedVal = 255;
-
-// Default “center” position for joystick
+// 受信データのデフォルト値（0xFF は「未受信」を表す）
 uint8_t stick_2 = 90;
 uint8_t stick_3 = 90;
+uint8_t btn_1 = 0xFF;    
+uint8_t prev_btn_1 = 0xFF;
+
+// 受信したチャンネルの値を一度だけ読み、有効(0xFF 以外)かつ変化があれば指定変数へ反映するヘルパー関数
+static inline void updateFromChannel(uint8_t ch, uint8_t &var) {
+  uint8_t v = controller.getDataByChannel(ch);
+  if (v != 0xFF && v != var) var = v;
+}
 
 void setup() {
-  Serial.begin(115200);               // Initialize the serial communication with a baud rate of 115200
+  Serial.begin(115200);
+  controller.setup("My ESP32");
+  controller.setOnConnectCallback(onDeviceConnect);
+  controller.setOnDisconnectCallback(onDeviceDisconnect);
 
-  // Setup the BLE connection
-  controller.setup("My ESP32");       // Set the BLE device name to "My ESP32"
-
-  // Set callback functions for when a device connects and disconnects
-  controller.setOnConnectCallback(onDeviceConnect);   // Function called on device connection
-  controller.setOnDisconnectCallback(onDeviceDisconnect);  // Function called on device disconnection
-
-  // Setup the servo
-  servo1.setPeriodHertz(50);          // Set the servo PWM frequency to 50Hz (typical for servos)
+  servo1.setPeriodHertz(50);
   servo2.setPeriodHertz(50);
 
   pinMode(PIN_LED, OUTPUT);
   digitalWrite(PIN_LED, LOW);
 
-  Serial.println("Waiting for a device to connect...");  // Print waiting message
+  Serial.println("Waiting for a device to connect...");
 }
 
-// Function called when a BLE device connects
+// デバイスが接続されたときの処理
 void onDeviceConnect() {
-  Serial.println("Device connected!");  // Print connection message
-
-  isConnected = true;                   // Set the connection flag to true
-
-  // Attach the servo to the defined pin, with pulse range between 500 to 2500 microseconds
-  servo1.attach(PIN_SERVO_1, 500, 2500);  
-  servo2.attach(PIN_SERVO_2, 500, 2500); 
-
+ 
+  Serial.println("Device connected!");
+  isConnected = true;
+  servo1.attach(PIN_SERVO_1, 500, 2500);
+  servo2.attach(PIN_SERVO_2, 500, 2500);
   digitalWrite(PIN_LED, HIGH);
 }
 
-// Function called when a BLE device disconnects
+// デバイスが切断されたときの処理
 void onDeviceDisconnect() {
-  Serial.println("Device disconnected!");  // Print disconnection message
-
-  isConnected = false;                     // Set the connection flag to false
-
-  servo1.detach();                       // Detach the servo to stop controlling it
-  servo2.detach(); 
-
+  Serial.println("Device disconnected!");
+  isConnected = false;
+  servo1.detach();
+  servo2.detach();
   digitalWrite(PIN_LED, LOW);
 }
 
 void loop() {
-  // Only run if a device is connected via BLE
-  if (isConnected) {
-
-    uint8_t err = controller.read_data();
-
-    if (err == no_err) {
-      uint8_t pairs = controller.getLastPairsCount();
-
-      // If there is at least one pair, find out which channels changed
-      if (pairs > 0) {
-
-        uint8_t ch1Val = controller.getDataByChannel(1);
-        if (ch1Val != 0xFF && ch1Val != lastPrintedVal) {
-          lastPrintedVal = ch1Val;
-          // Channel 1 toggles LED
-          digitalWrite(PIN_LED, (ch1Val == 1) ? LOW : HIGH);
-          //Serial.print("LED control (channel 1): ");
-          //Serial.println((ch1Val == 1) ? "OFF" : "ON");
-        }
-
-        uint8_t ch2Val = controller.getDataByChannel(2);
-        if (ch2Val != 0xFF && ch2Val != stick_2) {
-          stick_2 = ch2Val;
-          //Serial.print("stick_2 updated: ");
-          //Serial.println(stick_2);
-        }
-
-        uint8_t ch3Val = controller.getDataByChannel(3);
-        if (ch3Val != 0xFF && ch3Val != stick_3) {
-          stick_3 = ch3Val;
-          //Serial.print("stick_3 updated: ");
-          //Serial.println(stick_3);
-        }
-      }
-    } else if (err == cs_err) {
-      Serial.println("Checksum error on incoming packet");
-    } else if (err == data_err) {
-      Serial.println("Incoming packet length != 19");
-    }
-
-    servo1.write(stick_2);
-    servo2.write(stick_3);
-
-    int psd = analogRead(PIN_ANALOG_READ);
-    float dist = 1 / (float)psd * 30000;  // Conversion of analogue values to cm
-    int dist_int = (int)dist;
-    //Serial.print("dist_int = ");
-    //Serial.println(dist_int);
-    controller.write_data(5,dist_int);
+  if (!isConnected) {
+    delay(50);
+    return;
   }
 
-  delay(50);  // Add a small delay to reduce the loop frequency
+  // 19 バイトの受信パケットを読み取り、チャンネル/値のペアをパース
+  uint8_t err = controller.read_data();
+  if (err == no_err) {
+    uint8_t pairs = controller.getLastPairsCount();
+    if (pairs > 0) {
+      // 必要なチャンネルのみ抜き出してアプリ変数へ反映
+      const uint8_t channels[] = { 1, 2, 3 };
+      uint8_t* targets[] = { &btn_1, &stick_2, &stick_3 };
+      for (uint8_t i = 0; i < sizeof(channels)/sizeof(channels[0]); ++i) {
+        updateFromChannel(channels[i], *targets[i]);
+      }
+
+      // ch1: LED 制御（変化時のみトグル）。
+      // ここでは btn_1==1 のとき LOW、それ以外で HIGH を出力
+      if (btn_1 != 0xFF && btn_1 != prev_btn_1) {
+        prev_btn_1 = btn_1;
+        digitalWrite(PIN_LED, (btn_1 == 1) ? LOW : HIGH);
+      }
+    }
+  } else if (err == cs_err) {
+    Serial.println("Checksum error on incoming packet");
+  } else if (err == data_err) {
+    Serial.println("Incoming packet length != 19");
+  }
+
+  // 出力反映：サーボ角度を書き込み
+  servo1.write(stick_2);
+  servo2.write(stick_3);
+
+  // センサ読み取り例：アナログ値から簡易的に距離へ換算し、チャンネル 5 へ返信（値域や換算式は用途に応じて調整）
+  int psd = analogRead(PIN_ANALOG_READ);
+  float dist = 1 / (float)psd * 30000;
+  int dist_int = (int)dist;
+  controller.write_data(5, dist_int);
+
+  delay(50);
 }

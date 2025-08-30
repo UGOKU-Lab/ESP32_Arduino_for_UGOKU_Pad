@@ -18,12 +18,12 @@ void UGOKU_Pad_Controller::setup(char *device_name) {
   // Create a BLE service and characteristic
   pService = pServer->createService(SERVICE_UUID);  // Create a service with a defined UUID
   pCharacteristic = pService->createCharacteristic(
-                                         CHARACTERISTIC_UUID,                    // Characteristic UUID
-                                         BLECharacteristic::PROPERTY_READ |      // Allow read
-                                         BLECharacteristic::PROPERTY_WRITE |     // Allow write
-                                         BLECharacteristic::PROPERTY_WRITE_NR |  // Allow writing without response (for faster performance)
-                                         BLECharacteristic::PROPERTY_NOTIFY      // Allow notify
-                                         );
+    CHARACTERISTIC_UUID,                    // Characteristic UUID
+    BLECharacteristic::PROPERTY_READ |      // Allow read
+    BLECharacteristic::PROPERTY_WRITE |     // Allow write
+    BLECharacteristic::PROPERTY_WRITE_NR |  // Allow writing without response (for faster performance)
+    BLECharacteristic::PROPERTY_NOTIFY      // Allow notify
+  );
 
   pCharacteristic->addDescriptor(new BLE2902()); // For IOS
 
