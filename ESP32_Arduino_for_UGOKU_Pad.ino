@@ -91,9 +91,15 @@ void loop() {
     Serial.println("Incoming packet length != 19");
   }
 
-  // 出力反映：サーボ角度を書き込み
+  #if 1 //サーボ駆動
   servo1.write(stick_2);
   servo2.write(stick_3);
+  #endif
+
+  #if 0 //対向2輪を1スティックで動かす
+  servo1.write(stick_2 + stick_3 - 90);
+  servo2.write(stick_2 - stick_3 + 90);
+  #endif
 
   // センサ読み取り例：アナログ値から簡易的に距離へ換算し、チャンネル 5 へ返信（値域や換算式は用途に応じて調整）
   int psd = analogRead(PIN_ANALOG_READ);
