@@ -43,7 +43,6 @@ void setup() {
 
 // デバイスが接続されたときの処理
 void onDeviceConnect() {
- 
   Serial.println("Device connected!");
   isConnected = true;
   servo1.attach(PIN_SERVO_1, 500, 2500);
@@ -78,7 +77,7 @@ void loop() {
         updateFromChannel(channels[i], *targets[i]);
       }
 
-      // ch1: LED 制御（変化時のみトグル）。
+      // ch1: UGOKU PadのトグルスイッチによるピンのON-OFF
       // ここでは btn_1==1 のとき LOW、それ以外で HIGH を出力
       if (btn_1 != 0xFF && btn_1 != prev_btn_1) {
         prev_btn_1 = btn_1;
@@ -101,7 +100,7 @@ void loop() {
   servo2.write(stick_2 - stick_3 + 90);
   #endif
 
-  // センサ読み取り例：アナログ値から簡易的に距離へ換算し、チャンネル 5 へ返信（値域や換算式は用途に応じて調整）
+  // センサ読み取り例（PSD測距モジュール：アナログ値から簡易的に距離へ換算しチャンネル5へ返信）
   int psd = analogRead(PIN_ANALOG_READ);
   float dist = 1 / (float)psd * 30000;
   int dist_int = (int)dist;
