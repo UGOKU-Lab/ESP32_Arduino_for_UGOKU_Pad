@@ -1,10 +1,10 @@
+<p><span style="color:red"><strong>注意:</strong> このリポジトリは旧バージョンのため非推奨です。<br>
+ <a href="https://github.com/UGOKU-Lab/UGOKU-Pad_Arduino">最新のArduinoライブラリバージョン</a> を使用してください。</span></p>
+
 # ESP32_Arduino_for_UGOKU_Pad
 ESP32をUGOKU Padで動かすArduinoのサンプルプログラムです。  
+
 ## このサンプルプログラムできること
-- デジタル出力の操作
-- RCサーボの操作
-- ローテーションサーボの操作
-- PSD測距モジュール(GP2Y0A21YK)による距離表示（アナログ入力）
 <img src="https://github.com/user-attachments/assets/b2da444f-e0e3-46c4-aa92-2031e2f38083" width="600">
 
 ## 使用方法
